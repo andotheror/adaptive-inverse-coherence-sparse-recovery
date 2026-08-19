@@ -36,238 +36,87 @@
 ]
 
 \begin{abstract}
-Let $X\in\R^{n\times d}$ have independent $N(0,1/n)$ entries. After observing
-$X$, an adversary chooses a $k$-sparse signal $\theta^\star$ and noise $\xi$,
-then the learner observes $y=X\theta^\star+\xi$. Recent work proved that
-$n\gtrsim k^2\log(d/k)$ measurements suffice for
-$\|\widehat\theta-\theta^\star\|_\infty=O(\|X^\top\xi\|_\infty)$, but its lower
-bound was $n\gtrsim k^2$. We close the logarithmic gap.
+Let $X\in\R^{n\times d}$ have independent $N(0,1/n)$ entries. After observing $X$, an adversary chooses a $k$-sparse signal $\theta^\star$ and noise $\xi$, then the learner observes $y=X\theta^\star+\xi$. Recent work proved that $n\gtrsim k^2\log(d/k)$ measurements suffice for $\|\widehat\theta-\theta^\star\|_\infty=O(\|X^\top\xi\|_\infty)$, but its lower bound was $n\gtrsim k^2$. We close the logarithmic gap.
 
-The main ingredient is a sharp random-matrix law. If
-$L=\log(ed/s)$ and $n\gtrsim sL$, then with high probability
-\[
- \max_{|S|\leq s}\|(X_S^\top X_S)^{-1}\|_{\infty\to\infty}
- \asymp 1+s\sqrt{L/n}.
-\]
-For the lower bound, one anchor column selects the columns having the largest
-absolute correlations with it. Gaussian orthogonal decomposition leaves the
-selected residual columns independent. An exact Schur complement then exposes
-an inverse row with no perturbation remainder. The same decomposition controls
-all unselected correlations even though the support depends on the full design.
+The main ingredient is a sharp random-matrix law. If $L=\log(ed/s)$ and $n\gtrsim sL$, then with high probability \[ \max_{|S|\leq s}\|(X_S^\top X_S)^{-1}\|_{\infty\to\infty} \asymp 1+s\sqrt{L/n}. \] For the lower bound, one anchor column selects the columns having the largest absolute correlations with it. Gaussian orthogonal decomposition leaves the selected residual columns independent. An exact Schur complement then exposes an inverse row with no perturbation remainder. The same decomposition controls all unselected correlations even though the support depends on the full design.
 
-For every constant approximation factor, no estimator succeeds with probability
-$3/4$ when $n$ is below a sufficiently small constant times
-$k^2\log(ed/k)$. The result also yields the same lower threshold for exact
-variable selection. Together with the known upper bound, the adaptive Gaussian
-measurement complexity is $\Theta(k^2\log(ed/k))$ at constant confidence.
+For every constant approximation factor, no estimator succeeds with probability $3/4$ when $n$ is below a sufficiently small constant times $k^2\log(ed/k)$. The result also yields the same lower threshold for exact variable selection. Together with the known upper bound, the adaptive Gaussian measurement complexity is $\Theta(k^2\log(ed/k))$ at constant confidence.
 \end{abstract}
 
 \section{Introduction}
 \label{sec:intro}
 
-Sparse recovery asks for a $k$-sparse vector $\theta^\star\in\R^d$ from linear
-measurements
-\[
- y=X\theta^\star+\xi,
- \qquad X\in\R^{n\times d}.
-\]
-For Euclidean error, Gaussian designs with $n\asymp k\log(d/k)$ support stable
-recovery uniformly over sparse signals. Sup-norm error is more sensitive to how
-the signal and noise are chosen. If $(\theta^\star,\xi)$ is fixed independently
-of $X$, recent nearly linear-time methods again use about $k\log(d/k)$
-measurements. If the pair may depend on the realized design, the required number
-is quadratic in $k$ up to a logarithm \citep{chen2026adaptive}.
+Sparse recovery asks for a $k$-sparse vector $\theta^\star\in\R^d$ from linear measurements \[ y=X\theta^\star+\xi, \qquad X\in\R^{n\times d}. \] For Euclidean error, Gaussian designs with $n\asymp k\log(d/k)$ support stable recovery uniformly over sparse signals. Sup-norm error is more sensitive to how the signal and noise are chosen. If $(\theta^\star,\xi)$ is fixed independently of $X$, recent nearly linear-time methods again use about $k\log(d/k)$ measurements. If the pair may depend on the realized design, the required number is quadratic in $k$ up to a logarithm \citep{chen2026adaptive}.
 
-The adaptive model is a simultaneous guarantee. One random design should remain
-valid when a downstream procedure, a hyperparameter search, or an adversary
-chooses a sparse instance after inspecting it. The natural error scale in this
-model is
-\[
- \eta(X,\xi):=\|X^\top\xi\|_\infty.
-\]
-\citet{chen2026adaptive} showed that an $\ell_\infty$ restricted isometry
-condition gives error $O(\eta)$ once
-$n\gtrsim k^2\log(d/k)$. They proved an adaptive lower bound at scale $k^2$ and
-explicitly conjectured that the missing $\log(d/k)$ belongs in the lower bound.
+The adaptive model is a simultaneous guarantee. One random design should remain valid when a downstream procedure, a hyperparameter search, or an adversary chooses a sparse instance after inspecting it. The natural error scale in this model is \[ \eta(X,\xi):=\|X^\top\xi\|_\infty. \] \citet{chen2026adaptive} showed that an $\ell_\infty$ restricted isometry condition gives error $O(\eta)$ once $n\gtrsim k^2\log(d/k)$. They proved an adaptive lower bound at scale $k^2$ and explicitly conjectured that the missing $\log(d/k)$ belongs in the lower bound.
 
-We prove that conjecture. The logarithm comes from choosing a support rather than
-fixing one. For an anchor $x_0$, the largest $s$ values among
-$|\langle x_0,x_j\rangle|$ have size
-$\sqrt{\log(ed/s)/n}$. Their row sum is therefore
-$s\sqrt{\log(ed/s)/n}$. A direct argument for the Gram matrix is not enough.
-Sparse recovery needs a large row of an inverse Gram matrix, together with
-control of correlations outside the adaptively selected support.
+We prove that conjecture. The logarithm comes from choosing a support rather than fixing one. For an anchor $x_0$, the largest $s$ values among $|\langle x_0,x_j\rangle|$ have size $\sqrt{\log(ed/s)/n}$. Their row sum is therefore $s\sqrt{\log(ed/s)/n}$. A direct argument for the Gram matrix is not enough. Sparse recovery needs a large row of an inverse Gram matrix, together with control of correlations outside the adaptively selected support.
 
-Gaussian geometry resolves both difficulties. Normalize $x_0$ to $u$ and write
-every other column as
-\[
- x_j=c_j u+w_j,
- \qquad c_j=u^\top x_j,
- \qquad w_j\perp u.
-\]
-The coefficients $c_j$ are independent of the orthogonal residuals $w_j$.
-Selecting the largest $|c_j|$ therefore leaves the selected residual matrix
-Gaussian. The corresponding inverse Gram row has an exact block formula. There
-is no Neumann-series remainder whose spectral norm must be converted to a row
-sum. Conditional on the selection, unselected residuals are still independent,
-which controls the full vector $X^\top Xv$ used by the hard instance.
+Gaussian geometry resolves both difficulties. Normalize $x_0$ to $u$ and write every other column as \[ x_j=c_j u+w_j, \qquad c_j=u^\top x_j, \qquad w_j\perp u. \] The coefficients $c_j$ are independent of the orthogonal residuals $w_j$. Selecting the largest $|c_j|$ therefore leaves the selected residual matrix Gaussian. The corresponding inverse Gram row has an exact block formula. There is no Neumann-series remainder whose spectral norm must be converted to a row sum. Conditional on the selection, unselected residuals are still independent, which controls the full vector $X^\top Xv$ used by the hard instance.
 
 Our contributions are:
 \begin{itemize}
 \item We prove a two-sided law for the largest infinity norm of an inverse
-principal Gram matrix. Its transition occurs at
-$n\asymp s^2\log(ed/s)$.
+principal Gram matrix. Its transition occurs at $n\asymp s^2\log(ed/s)$.
 \item We construct an adaptive $k$-sparse vector $v$ whose sup norm is large
-relative to $\|X^\top Xv\|_\infty$. The construction covers every $n\geq k$.
-For $n<k$, a sparse null vector gives the lower bound directly.
+relative to $\|X^\top Xv\|_\infty$. The construction covers every $n\geq k$. For $n<k$, a sparse null vector gives the lower bound directly.
 \item An indistinguishable-pairs argument gives the sharp
-$\Omega(k^2\log(ed/k))$ lower bound for sup-norm recovery and exact variable
-selection. The argument is information theoretic and allows randomized
-estimators.
+$\Omega(k^2\log(ed/k))$ lower bound for sup-norm recovery and exact variable selection. The argument is information theoretic and allows randomized estimators.
 \end{itemize}
 
 \paragraph{Related work.}
-Classical support-recovery theory studies signals fixed independently of a
-Gaussian design. Sharp or near-sharp thresholds were obtained for the Lasso,
-maximum likelihood, and correlation screening
-\citep{wainwright2009threshold,fletcher2009support,wainwright2009information}.
-Sup-norm guarantees for the Lasso, Dantzig selector, and greedy methods use
-coherence or related design conditions
-\citep{lounici2008supnorm,ye2010minimax,cai2011omp}. Minimax lower bounds for
-sparse estimation under mean-squared loss allow worst-case signals but use an
-independent Gaussian noise model \citep{candes2013estimate}. These results do not
-characterize simultaneous sup-norm error when both the support and noise may
-depend on $X$ and the error scale is $\|X^\top\xi\|_\infty$.
-Recent methods extend support guarantees to pivotal Lasso estimators under
-Gaussian noise and mutual incoherence, and to support exploration under RIP and
-Euclidean noise \citep{massias2020pivotal,mohamed2024sea}. They likewise do not
-study a design-dependent signal-noise pair.
+Classical support-recovery theory studies signals fixed independently of a Gaussian design. Sharp or near-sharp thresholds were obtained for the Lasso, maximum likelihood, and correlation screening \citep{wainwright2009threshold,fletcher2009support,wainwright2009information}. Sup-norm guarantees for the Lasso, Dantzig selector, and greedy methods use coherence or related design conditions \citep{lounici2008supnorm,ye2010minimax,cai2011omp}. Minimax lower bounds for sparse estimation under mean-squared loss allow worst-case signals but use an independent Gaussian noise model \citep{candes2013estimate}. These results do not characterize simultaneous sup-norm error when both the support and noise may depend on $X$ and the error scale is $\|X^\top\xi\|_\infty$. Recent methods extend support guarantees to pivotal Lasso estimators under Gaussian noise and mutual incoherence, and to support exploration under RIP and Euclidean noise \citep{massias2020pivotal,mohamed2024sea}. They likewise do not study a design-dependent signal-noise pair.
 
-The closest work is \citet{chen2026adaptive}, which introduced the adaptive
-model studied here, the metric $\eta(X,\xi)$, and the matching upper bound. Its
-full version appeared in June 2026. Searches through August 4, 2026 found no
-later paper resolving its conjecture. Our random-matrix theorem is also distinct
-from standard Gaussian RIP, which controls spectral norms of all sparse Gram
-matrices \citep{foucart2013compressive,vershynin2018highdimensional}. We need
-the row-sum norm of their inverses and identify its larger sharp scale.
+The closest work is \citet{chen2026adaptive}, which introduced the adaptive model studied here, the metric $\eta(X,\xi)$, and the matching upper bound. Its full version appeared in June 2026. Searches through August 4, 2026 found no later paper resolving its conjecture. Our random-matrix theorem is also distinct from standard Gaussian RIP, which controls spectral norms of all sparse Gram matrices \citep{foucart2013compressive,vershynin2018highdimensional}. We need the row-sum norm of their inverses and identify its larger sharp scale.
 
 \section{Model and main results}
 \label{sec:results}
 
-For $S\subseteq[d]$, let $X_S$ contain the columns indexed by $S$. Vector and
-matrix infinity norms are
-\[
- \|z\|_\infty=\max_i|z_i|,
- \qquad
- \|M\|_{\infty\to\infty}=\max_i\sum_j|M_{ij}|.
-\]
-All constants below are numerical unless indexed by an approximation factor.
+For $S\subseteq[d]$, let $X_S$ contain the columns indexed by $S$. Vector and matrix infinity norms are \[ \|z\|_\infty=\max_i|z_i|, \qquad \|M\|_{\infty\to\infty}=\max_i\sum_j|M_{ij}|. \] All constants below are numerical unless indexed by an approximation factor.
 
 \paragraph{Adaptive recovery.}
-First draw $X$ with independent $N(0,1/n)$ entries. A possibly randomized
-adversary then chooses $(\theta^\star,\xi)$ as a measurable function of $X$,
-subject only to $|\supp(\theta^\star)|\leq k$. An estimator receives $(X,y)$,
-where $y=X\theta^\star+\xi$. It achieves factor $A$ if
-\[
- \|\widehat\theta-\theta^\star\|_\infty
- \leq A\|X^\top\xi\|_\infty.
- \tag{1}
-\]
-The probability includes $X$, the instance, and any estimator randomness.
+First draw $X$ with independent $N(0,1/n)$ entries. A possibly randomized adversary then chooses $(\theta^\star,\xi)$ as a measurable function of $X$, subject only to $|\supp(\theta^\star)|\leq k$. An estimator receives $(X,y)$, where $y=X\theta^\star+\xi$. It achieves factor $A$ if \[ \|\widehat\theta-\theta^\star\|_\infty \leq A\|X^\top\xi\|_\infty. \tag{1} \] The probability includes $X$, the instance, and any estimator randomness.
 
 \begin{theorem}[Sharp adaptive measurement complexity]
 \label{thm:complexity}
-Fix $A\geq1$. There are constants $c_A,K_A>0$ and a universal $C>0$ such that, for
-$d\geq k\geq K_A$ and $L_k=\log(ed/k)$, the following hold.
+Fix $A\geq1$. There are constants $c_A,K_A>0$ and a universal $C>0$ such that, for $d\geq k\geq K_A$ and $L_k=\log(ed/k)$, the following hold.
 \begin{enumerate}
 \item If $n\geq Ck^2L_k$, there is an estimator satisfying (1) with
-$A=4$, simultaneously for every adaptive instance, with probability at least
-$0.9$ over $X$.
+$A=4$, simultaneously for every adaptive instance, with probability at least $0.9$ over $X$.
 \item If $n\leq c_Ak^2L_k$, no estimator satisfies (1) with probability at
 least $3/4$ for every adaptive instance.
 \end{enumerate}
-Consequently, for every fixed $A\geq4$, the constant-confidence complexity is
-$\Theta(k^2\log(ed/k))$.
+Consequently, for every fixed $A\geq4$, the constant-confidence complexity is $\Theta(k^2\log(ed/k))$.
 \end{theorem}
 
-The upper statement is included to make the threshold self-contained. The
-estimator may be computationally inefficient. The iterative hard-thresholding
-method of \citet{chen2026adaptive} gives the corresponding efficient upper
-bound under its stated radius and tolerance parameters.
+The upper statement is included to make the threshold self-contained. The estimator may be computationally inefficient. The iterative hard-thresholding method of \citet{chen2026adaptive} gives the corresponding efficient upper bound under its stated radius and tolerance parameters.
 
-The random-matrix mechanism behind the lower bound is of independent interest.
-Define
-\[
- \Gamma_s(X):=
- \max_{S\subseteq[d],\ 1\leq |S|\leq s}
- \|(X_S^\top X_S)^{-1}\|_{\infty\to\infty},
- \tag{2}
-\]
-with value $+\infty$ if a selected Gram matrix is singular.
+The random-matrix mechanism behind the lower bound is of independent interest. Define \[ \Gamma_s(X):= \max_{S\subseteq[d],\ 1\leq |S|\leq s} \|(X_S^\top X_S)^{-1}\|_{\infty\to\infty}, \tag{2} \] with value $+\infty$ if a selected Gram matrix is singular.
 
 \begin{theorem}[Adaptive inverse coherence]
 \label{thm:inverse}
-There are constants $c,C>0$ such that, if $8\leq s\leq d$,
-$L_s=\log(ed/s)$, and $n\geq CsL_s$, then with probability at least
-$1-Ce^{-cs}$,
-\[
- c\left(1+s\sqrt{\frac{L_s}{n}}\right)
- \leq \Gamma_s(X)
- \leq
- C\left(1+s\sqrt{\frac{L_s}{n}}\right).
- \tag{3}
-\]
+There are constants $c,C>0$ such that, if $8\leq s\leq d$, $L_s=\log(ed/s)$, and $n\geq CsL_s$, then with probability at least $1-Ce^{-cs}$, \[ c\left(1+s\sqrt{\frac{L_s}{n}}\right) \leq \Gamma_s(X) \leq C\left(1+s\sqrt{\frac{L_s}{n}}\right). \tag{3} \]
 \end{theorem}
 
-Theorem~\ref{thm:inverse} is not a restatement of RIP. At the usual RIP scale
-$n\asymp sL_s$, every sparse Gram matrix is spectrally well conditioned, while
-$\Gamma_s(X)$ is of order $\sqrt{s}$. Uniform boundedness in row-sum norm
-appears only at $n\asymp s^2L_s$.
+Theorem~\ref{thm:inverse} is not a restatement of RIP. At the usual RIP scale $n\asymp sL_s$, every sparse Gram matrix is spectrally well conditioned, while $\Gamma_s(X)$ is of order $\sqrt{s}$. Uniform boundedness in row-sum norm appears only at $n\asymp s^2L_s$.
 
-For variable selection, require
-\[
- \min_{j\in\supp(\theta^\star)}|\theta_j^\star|
- >A\|X^\top\xi\|_\infty
- \tag{4}
-\]
-and ask for the exact support. We use the convention that the minimum over an
-empty support is $+\infty$. The lower construction also separates this task.
+For variable selection, require \[ \min_{j\in\supp(\theta^\star)}|\theta_j^\star| >A\|X^\top\xi\|_\infty \tag{4} \] and ask for the exact support. We use the convention that the minimum over an empty support is $+\infty$. The lower construction also separates this task.
 
 \begin{corollary}[Variable selection]
 \label{cor:selection}
-For every fixed $A\geq1$, the lower statement of
-Theorem~\ref{thm:complexity} holds for exact support recovery under (4).
-For the customary sufficiently large fixed constant in (4), the adaptive upper
-bound of \citet{chen2026adaptive} therefore gives constant-confidence Gaussian
-measurement complexity
-$\Theta(k^2\log(ed/k))$.
+For every fixed $A\geq1$, the lower statement of Theorem~\ref{thm:complexity} holds for exact support recovery under (4). For the customary sufficiently large fixed constant in (4), the adaptive upper bound of \citet{chen2026adaptive} therefore gives constant-confidence Gaussian measurement complexity $\Theta(k^2\log(ed/k))$.
 \end{corollary}
 
 \section{The inverse row selected by one anchor}
 \label{sec:inverse}
 
-We isolate the exact identity that drives both main theorems. Fix the first
-column $x_0$, let $r=\|x_0\|_2$, and put $u=x_0/r$. For $j\neq0$, write
-\[
- c_j=u^\top x_j,
- \qquad w_j=(I-uu^\top)x_j.
- \tag{5}
-\]
-Conditional on $u$, the $c_j$ are independent $N(0,1/n)$ variables. They are
-independent of all $w_j$. In an orthonormal basis of $u^\perp$, the residuals
-are independent $N(0,I_{n-1}/n)$ vectors.
+We isolate the exact identity that drives both main theorems. Fix the first column $x_0$, let $r=\|x_0\|_2$, and put $u=x_0/r$. For $j\neq0$, write \[ c_j=u^\top x_j, \qquad w_j=(I-uu^\top)x_j. \tag{5} \] Conditional on $u$, the $c_j$ are independent $N(0,1/n)$ variables. They are independent of all $w_j$. In an orthonormal basis of $u^\perp$, the residuals are independent $N(0,I_{n-1}/n)$ vectors.
 
-Select a set $T$ using only the absolute values $|c_j|$. Flip selected column
-signs so that $c=(|c_j|)_{j\in T}$ is nonnegative, and let $W$ contain the
-sign-flipped residuals. Sign flips preserve the Gaussian law. Write
-$H=W^\top W$ and $q=c^\top H^{-1}c$. Vectors constructed in these coordinates
-are mapped back by the same diagonal signs. This preserves their sup norms and
-the absolute correlations with every column.
+Select a set $T$ using only the absolute values $|c_j|$. Flip selected column signs so that $c=(|c_j|)_{j\in T}$ is nonnegative, and let $W$ contain the sign-flipped residuals. Sign flips preserve the Gaussian law. Write $H=W^\top W$ and $q=c^\top H^{-1}c$. Vectors constructed in these coordinates are mapped back by the same diagonal signs. This preserves their sup norms and the absolute correlations with every column.
 
 \begin{lemma}[Exact inverse row]
 \label{lem:block}
-For $S=\{0\}\cup T$, the sign-flipped Gram matrix and the row of its inverse
-indexed by the anchor satisfy
+For $S=\{0\}\cup T$, the sign-flipped Gram matrix and the row of its inverse indexed by the anchor satisfy
 \begin{align}
  G_S&=
  \begin{bmatrix}
@@ -279,123 +128,70 @@ indexed by the anchor satisfy
  &=\left[\frac{1+q}{r^2},-\frac1r c^\top H^{-1}\right].
  \tag{7}
 \end{align}
-In fact,
-\[
- G_S^{-1}=
+In fact, \[ G_S^{-1}=
  \begin{bmatrix}
  (1+q)/r^2&-c^\top H^{-1}/r\\
  -H^{-1}c/r&H^{-1}
  \end{bmatrix}.
- \tag{8}
-\]
+\tag{8} \]
 \end{lemma}
 
 \begin{proof}
-Equation (6) follows from (5). Apply the Sherman--Morrison identity to
-$H+cc^\top$, then use block inversion. Direct multiplication of (6) and (8)
-also verifies the formula.
+Equation (6) follows from (5). Apply the Sherman--Morrison identity to $H+cc^\top$, then use block inversion. Direct multiplication of (6) and (8) also verifies the formula.
 \end{proof}
 
-Two standard Gaussian facts complete the proof. Their finite-probability forms
-are proved in Appendix~\ref{app:gaussian}.
+Two standard Gaussian facts complete the proof. Their finite-probability forms are proved in Appendix~\ref{app:gaussian}.
 
 \begin{lemma}[Selected coefficients and residuals]
 \label{lem:gaussian}
-Let $N\geq2m$ and let $T$ index the $m$ largest absolute values among
-$N$ independent $N(0,1/n)$ variables. For $L=\log(eN/m)$, with probability
-at least $1-Ce^{-cm}$,
+Let $N\geq2m$ and let $T$ index the $m$ largest absolute values among $N$ independent $N(0,1/n)$ variables. For $L=\log(eN/m)$, with probability at least $1-Ce^{-cm}$,
 \begin{align}
  \|c_T\|_1&\geq cm\sqrt{L/n},
  &\|c_T\|_2&\leq C\sqrt{mL/n},\notag\\
  \max_{j\notin T}|c_j|&\leq C\sqrt{L/n}.
  \tag{9}
 \end{align}
-Independently, if $W\in\R^{(n-1)\times m}$ has independent $N(0,1/n)$
-entries and $n\geq C_\epsilon m$, then
-\[
- \|W^\top W-I\|_{\mathrm{op}}\leq\epsilon
- \tag{10}
-\]
-with probability at least $1-2e^{-cn}$.
+Independently, if $W\in\R^{(n-1)\times m}$ has independent $N(0,1/n)$ entries and $n\geq C_\epsilon m$, then \[ \|W^\top W-I\|_{\mathrm{op}}\leq\epsilon \tag{10} \] with probability at least $1-2e^{-cn}$.
 \end{lemma}
 
 \begin{proof}[Proof of the lower bound in Theorem~\ref{thm:inverse}]
-Take $m=\lfloor s/2\rfloor-1$ and choose the largest anchor correlations.
-The selected $W$ remains Gaussian because selection uses only the independent
-coefficients. Choose the constant in $n\geq CsL_s$ so that (10) holds with a
-sufficiently small $\epsilon$. Since $c$ is nonnegative,
+Take $m=\lfloor s/2\rfloor-1$ and choose the largest anchor correlations. The selected $W$ remains Gaussian because selection uses only the independent coefficients. Choose the constant in $n\geq CsL_s$ so that (10) holds with a sufficiently small $\epsilon$. Since $c$ is nonnegative,
 \begin{align*}
  \|H^{-1}c\|_1
  &\geq \boldsymbol1^\top H^{-1}c\\
  &\geq \|c\|_1-\sqrt m\|H^{-1}-I\|_{\mathrm{op}}\|c\|_2\\
  &\geq cm\sqrt{L_s/n}.
 \end{align*}
-Also $r$ is bounded above and below with probability $1-2e^{-cn}$.
-Equation (7) gives the claimed lower bound, including the constant diagonal
-term.
+Also $r$ is bounded above and below with probability $1-2e^{-cn}$. Equation (7) gives the claimed lower bound, including the constant diagonal term.
 \end{proof}
 
 For the upper bound, a uniform argument is needed.
 
 \begin{proof}[Proof of the upper bound in Theorem~\ref{thm:inverse}]
-Standard Gaussian RIP gives, with probability at least $1-e^{-csL_s}$,
-\[
- \frac12I\preceq X_S^\top X_S\preceq\frac32I
- \quad\text{for every }|S|\leq s.
- \tag{11}
-\]
-For every anchor, a union bound for Gaussian order statistics gives
-\[
- \max_{|T|\leq s-1}\|c_T\|_2
- \leq C\sqrt{sL_s/n}.
- \tag{12}
-\]
-The factor for the union over anchors is absorbed because
-$s\log(ed/s)\geq\log(ed)$.
+Standard Gaussian RIP gives, with probability at least $1-e^{-csL_s}$, \[ \frac12I\preceq X_S^\top X_S\preceq\frac32I \quad\text{for every }|S|\leq s. \tag{11} \] For every anchor, a union bound for Gaussian order statistics gives \[ \max_{|T|\leq s-1}\|c_T\|_2 \leq C\sqrt{sL_s/n}. \tag{12} \] The factor for the union over anchors is absorbed because $s\log(ed/s)\geq\log(ed)$.
 
-Fix $S=\{i\}\cup T$. The projected Gram matrix in (6) obeys
-$H\succeq I/2$. Indeed,
-\[
- z^\top Hz=\min_a\|a x_i+X_Tz\|_2^2
- \geq\frac12\|z\|_2^2
-\]
-by (11). Thus $\|H^{-1}\|_{\mathrm{op}}\leq2$. Equations (7) and (12) give
+Fix $S=\{i\}\cup T$. The projected Gram matrix in (6) obeys $H\succeq I/2$. Indeed, \[ z^\top Hz=\min_a\|a x_i+X_Tz\|_2^2 \geq\frac12\|z\|_2^2 \] by (11). Thus $\|H^{-1}\|_{\mathrm{op}}\leq2$. Equations (7) and (12) give
 \begin{align*}
  \|e_i^\top G_S^{-1}\|_1
  &\leq C(1+\|c_T\|_2^2)
    +C\sqrt{s}\|c_T\|_2\\
  &\leq C(1+s\sqrt{L_s/n}),
 \end{align*}
-where $n\geq CsL_s$ absorbs the quadratic term. Maximize over rows and
-supports.
+where $n\geq CsL_s$ absorbs the quadratic term. Maximize over rows and supports.
 \end{proof}
 
 \section{A global hard certificate}
 \label{sec:certificate}
 
-A large inverse row only controls correlations on its support. The next result
-keeps all $d$ correlations small. Let $L_k=\log(ed/k)$ and
-$D=\log(ed)$.
+A large inverse row only controls correlations on its support. The next result keeps all $d$ correlations small. Let $L_k=\log(ed/k)$ and $D=\log(ed)$.
 
 \begin{proposition}[Adaptive hard vector]
 \label{prop:certificate}
-There are constants $c,C>0$ such that, for $d\geq k\geq C$ and $n\geq k$,
-with probability at least $0.8$ there is a vector $v$ supported on at most
-$k/4+1$ coordinates for which
-\[
- \frac{\|v\|_\infty}{\|X^\top Xv\|_\infty}
- \geq
- c\frac{1+k\sqrt{L_k/n}+kL_k/n}
- {1+\sqrt{L_k/n}+\sqrt{k(1+L_k/n)D/n}}.
- \tag{13}
-\]
+There are constants $c,C>0$ such that, for $d\geq k\geq C$ and $n\geq k$, with probability at least $0.8$ there is a vector $v$ supported on at most $k/4+1$ coordinates for which \[ \frac{\|v\|_\infty}{\|X^\top Xv\|_\infty} \geq c\frac{1+k\sqrt{L_k/n}+kL_k/n} {1+\sqrt{L_k/n}+\sqrt{k(1+L_k/n)D/n}}. \tag{13} \]
 \end{proposition}
 
 \begin{proof}
-Choose $m=\lfloor\rho k\rfloor$ largest anchor correlations, where
-$0<\rho\leq1/4$ is a sufficiently small constant. Since $n\geq k$,
-Lemma~\ref{lem:gaussian} makes $\|H-I\|_{\mathrm{op}}\leq\epsilon$ for a
-sufficiently small fixed $\epsilon$. Let $a=H^{-1}c$, choose
+Choose $m=\lfloor\rho k\rfloor$ largest anchor correlations, where $0<\rho\leq1/4$ is a sufficiently small constant. Since $n\geq k$, Lemma~\ref{lem:gaussian} makes $\|H-I\|_{\mathrm{op}}\leq\epsilon$ for a sufficiently small fixed $\epsilon$. Let $a=H^{-1}c$, choose
 \begin{align}
  h_0&=1,
  &h_T&=-\sgn(a),\notag\\
@@ -403,16 +199,9 @@ sufficiently small fixed $\epsilon$. Let $a=H^{-1}c$, choose
  &v_{S^c}&=0.
  \tag{14}
 \end{align}
-The first coordinate in (8), the lower bounds in (9), and fixed conditioning of
-$H$ yield
-\[
- v_0=\frac{1+q}{r^2}+\frac{\|a\|_1}{r}
- \geq c(1+k\sqrt{L_k/n}+kL_k/n).
- \tag{15}
-\]
+The first coordinate in (8), the lower bounds in (9), and fixed conditioning of $H$ yield \[ v_0=\frac{1+q}{r^2}+\frac{\|a\|_1}{r} \geq c(1+k\sqrt{L_k/n}+kL_k/n). \tag{15} \]
 
-Put $z=X_Sv_S$. On $S$, we have $X_S^\top z=h$, so every selected
-correlation has absolute value one. The exact inverse gives
+Put $z=X_Sv_S$. On $S$, we have $X_S^\top z=h$, so every selected correlation has absolute value one. The exact inverse gives
 \begin{align*}
  \|z\|_2^2
  &=h^\top G_S^{-1}h\\
@@ -420,158 +209,59 @@ correlation has absolute value one. The exact inverse gives
  \leq Ck(1+L_k/n).
  \tag{16}
 \end{align*}
-Also $x_0^\top z=h_0=1$, hence $u^\top z=1/r$. For every $j\notin S$,
-\[
- x_j^\top z=c_j/r+w_j^\top(I-uu^\top)z.
- \tag{17}
-\]
-Conditional on all coefficients and the selected residuals, each unselected
-second term is centered Gaussian with variance at most $\|z\|_2^2/n$.
-The residuals remain independent under this conditioning. Equation (9), a
-Gaussian tail bound, and a union bound over $d$ coordinates give
-\[
- \|X^\top z\|_\infty
- \leq C\{1+\sqrt{L_k/n}+\sqrt{k(1+L_k/n)D/n}\}.
- \tag{18}
-\]
-Since $X^\top z=X^\top Xv$, combining (15) and (18) proves (13).
+Also $x_0^\top z=h_0=1$, hence $u^\top z=1/r$. For every $j\notin S$, \[ x_j^\top z=c_j/r+w_j^\top(I-uu^\top)z. \tag{17} \] Conditional on all coefficients and the selected residuals, each unselected second term is centered Gaussian with variance at most $\|z\|_2^2/n$. The residuals remain independent under this conditioning. Equation (9), a Gaussian tail bound, and a union bound over $d$ coordinates give \[ \|X^\top z\|_\infty \leq C\{1+\sqrt{L_k/n}+\sqrt{k(1+L_k/n)D/n}\}. \tag{18} \] Since $X^\top z=X^\top Xv$, combining (15) and (18) proves (13).
 \end{proof}
 
-The identity $x_0^\top z=1$ is important. Bounding $|u^\top z|$ by
-$\|z\|_2$ would introduce an artificial restriction involving $k\log d$.
+The identity $x_0^\top z=1$ is important. Bounding $|u^\top z|$ by $\|z\|_2$ would introduce an artificial restriction involving $k\log d$.
 
 \section{Sharp recovery and selection lower bounds}
 \label{sec:lower}
 
-We first convert Proposition~\ref{prop:certificate} into a simpler asymptotic
-statement.
+We first convert Proposition~\ref{prop:certificate} into a simpler asymptotic statement.
 
 \begin{lemma}[Diverging separation]
 \label{lem:ratio}
-If $k\to\infty$, $d\geq k$, $n\geq k$, and
-$n=o(k^2L_k)$, then the right side of (13) diverges.
-For every fixed $A$, it exceeds $2A$ whenever
-$n\leq c_Ak^2L_k$ and $k\geq K_A$.
+If $k\to\infty$, $d\geq k$, $n\geq k$, and $n=o(k^2L_k)$, then the right side of (13) diverges. For every fixed $A$, it exceeds $2A$ whenever $n\leq c_Ak^2L_k$ and $k\geq K_A$.
 \end{lemma}
 
 \begin{proof}
-Set $t=\sqrt{L_k/n}$ and $g=D/L_k$. The ratio in (13) is bounded below by
-a constant times
-\[
- \min\{kt,\sqrt{k/g}\}.
- \tag{19}
-\]
-Indeed, for $t\leq1$ this follows by comparing $1+kt$ with
-$1+t\sqrt{kg}$, and for $t>1$ by comparing $kt^2$ with
-$t+t^2\sqrt{kg}$.
-The first term diverges when $n=o(k^2L_k)$. For the second, write
-$d=kr$ with $r\geq1$. Then
-\[
- \frac{kL_k}{D}
- =\frac{k(1+\log r)}{1+\log k+\log r}
- \geq\frac{k}{1+\log k}\longrightarrow\infty.
-\]
-The finite statement follows by first choosing $c_A$ and then $K_A$.
+Set $t=\sqrt{L_k/n}$ and $g=D/L_k$. The ratio in (13) is bounded below by a constant times \[ \min\{kt,\sqrt{k/g}\}. \tag{19} \] Indeed, for $t\leq1$ this follows by comparing $1+kt$ with $1+t\sqrt{kg}$, and for $t>1$ by comparing $kt^2$ with $t+t^2\sqrt{kg}$. The first term diverges when $n=o(k^2L_k)$. For the second, write $d=kr$ with $r\geq1$. Then \[ \frac{kL_k}{D} =\frac{k(1+\log r)}{1+\log k+\log r} \geq\frac{k}{1+\log k}\longrightarrow\infty. \] The finite statement follows by first choosing $c_A$ and then $K_A$.
 \end{proof}
 
 \begin{proof}[Proof of the lower bound in Theorem~\ref{thm:complexity}]
-If $n<k$, a generic set of $n+1$ Gaussian columns has a null vector $v$ with
-support at most $k$. The observations generated by $(0,0)$ and $(v,0)$ are
-identical, while (1) requires exact recovery in both cases.
+If $n<k$, a generic set of $n+1$ Gaussian columns has a null vector $v$ with support at most $k$. The observations generated by $(0,0)$ and $(v,0)$ are identical, while (1) requires exact recovery in both cases.
 
-Now let $n\geq k$. On the event in Proposition~\ref{prop:certificate}, rescale
-$v$ so that $\|X^\top Xv\|_\infty=1$. Consider a fair hidden bit $B$ and the
-two adaptive instances
-\[
- (\theta_0,\xi_0)=(\bar\theta,Xv),
- \qquad
- (\theta_1,\xi_1)=(\bar\theta+v,0),
- \tag{20}
-\]
-where $\bar\theta$ is zero for recovery. Both yield the same $y=X\bar\theta+Xv$.
-By Lemma~\ref{lem:ratio}, choose constants so that $\|v\|_\infty>2A$.
-The first allowable error ball and the singleton required by the zero-noise
-second instance are disjoint. Conditional on $X$ and the hard event, any
-randomized estimator succeeds for at most one value of $B$, so its average
-success is at most $1/2$. Since the event has probability at least $0.8$, total
-success is at most $0.6<3/4$.
+Now let $n\geq k$. On the event in Proposition~\ref{prop:certificate}, rescale $v$ so that $\|X^\top Xv\|_\infty=1$. Consider a fair hidden bit $B$ and the two adaptive instances \[ (\theta_0,\xi_0)=(\bar\theta,Xv), \qquad (\theta_1,\xi_1)=(\bar\theta+v,0), \tag{20} \] where $\bar\theta$ is zero for recovery. Both yield the same $y=X\bar\theta+Xv$. By Lemma~\ref{lem:ratio}, choose constants so that $\|v\|_\infty>2A$. The first allowable error ball and the singleton required by the zero-noise second instance are disjoint. Conditional on $X$ and the hard event, any randomized estimator succeeds for at most one value of $B$, so its average success is at most $1/2$. Since the event has probability at least $0.8$, total success is at most $0.6<3/4$.
 \end{proof}
 
 \begin{proof}[Proof of Corollary~\ref{cor:selection}]
-Choose one coordinate outside $\supp(v)$ and let $\bar\theta$ in (20) be
-supported there, with magnitude larger than $A\|X^\top Xv\|_\infty$.
-Instance zero satisfies (4). Instance one has zero noise, so every nonzero
-coefficient satisfies (4), and its support differs from that of instance zero.
-The same hidden-bit argument applies. For $n<k$, use the zero signal and a
-nonzero null vector on any $n+1$ columns. Their supports differ, both noises
-vanish, and (4) holds under the empty-support convention.
+Choose one coordinate outside $\supp(v)$ and let $\bar\theta$ in (20) be supported there, with magnitude larger than $A\|X^\top Xv\|_\infty$. Instance zero satisfies (4). Instance one has zero noise, so every nonzero coefficient satisfies (4), and its support differs from that of instance zero. The same hidden-bit argument applies. For $n<k$, use the zero signal and a nonzero null vector on any $n+1$ columns. Their supports differ, both noises vanish, and (4) holds under the empty-support convention.
 \end{proof}
 
 \section{The matching upper bound}
 \label{sec:upper}
 
-For completeness, we give a short information-theoretic upper proof. Define the
-possibly intractable residual estimator
-\[
- \widehat\theta\in
- \argmin_{\|u\|_0\leq k}\|X^\top(y-Xu)\|_\infty.
- \tag{21}
-\]
+For completeness, we give a short information-theoretic upper proof. Define the possibly intractable residual estimator \[ \widehat\theta\in \argmin_{\|u\|_0\leq k}\|X^\top(y-Xu)\|_\infty. \tag{21} \]
 
 \begin{lemma}[Gaussian infinity RIP]
 \label{lem:infrip}
-If $n\geq Ck^2\log(ed/k)$, then with probability at least $0.9$,
-\[
- \|(X_S^\top X_S-I)z\|_\infty\leq\frac12\|z\|_\infty
- \tag{22}
-\]
-for every $|S|\leq2k$ and every $z\in\R^S$.
+If $n\geq Ck^2\log(ed/k)$, then with probability at least $0.9$, \[ \|(X_S^\top X_S-I)z\|_\infty\leq\frac12\|z\|_\infty \tag{22} \] for every $|S|\leq2k$ and every $z\in\R^S$.
 \end{lemma}
 
-This is the Gaussian $\ell_\infty$-RIP bound of
-\citet{chen2026adaptive}. Appendix~\ref{app:upper} includes the one-line
-certificate union bound.
+This is the Gaussian $\ell_\infty$-RIP bound of \citet{chen2026adaptive}. Appendix~\ref{app:upper} includes the one-line certificate union bound.
 
 \begin{proof}[Proof of the upper bound in Theorem~\ref{thm:complexity}]
-Let $h=\widehat\theta-\theta^\star$ and
-$S=\supp(\widehat\theta)\cup\supp(\theta^\star)$. Since $\theta^\star$ is
-feasible in (21),
-\[
- \|X^\top Xh\|_\infty
- \leq\|X^\top(y-X\widehat\theta)\|_\infty
-     +\|X^\top\xi\|_\infty
- \leq2\eta(X,\xi).
-\]
-On (22),
-$\|X^\top Xh\|_\infty\geq\|h\|_\infty/2$. Therefore
-$\|h\|_\infty\leq4\eta(X,\xi)$. The event depends only on $X$, so the
-guarantee is simultaneous over all adaptive instances.
+Let $h=\widehat\theta-\theta^\star$ and $S=\supp(\widehat\theta)\cup\supp(\theta^\star)$. Since $\theta^\star$ is feasible in (21), \[ \|X^\top Xh\|_\infty \leq\|X^\top(y-X\widehat\theta)\|_\infty +\|X^\top\xi\|_\infty \leq2\eta(X,\xi). \] On (22), $\|X^\top Xh\|_\infty\geq\|h\|_\infty/2$. Therefore $\|h\|_\infty\leq4\eta(X,\xi)$. The event depends only on $X$, so the guarantee is simultaneous over all adaptive instances.
 \end{proof}
 
 \section{Discussion}
 \label{sec:discussion}
 
-Adaptive sup-norm recovery is governed by an extreme principal inverse, not by
-a typical fixed-support inverse. Selecting the largest correlations supplies the
-missing $\log(d/k)$, while Gaussian orthogonal decomposition preserves enough
-independence to turn the local inverse row into a global hard instance.
+Adaptive sup-norm recovery is governed by an extreme principal inverse, not by a typical fixed-support inverse. Selecting the largest correlations supplies the missing $\log(d/k)$, while Gaussian orthogonal decomposition preserves enough independence to turn the local inverse row into a global hard instance.
 
-There is a technical issue in the printed proof of its fixed-support inverse
-bound, Lemma 18 of \citet{chen2026adaptive}. It bounds a Neumann-series
-remainder in spectral norm
-and then uses it as an upper bound in infinity-operator norm. For symmetric
-matrices the general inequality is
-$\|M\|_{\mathrm{op}}\leq\|M\|_{\infty\to\infty}$, in the opposite direction.
-Our proof neither assumes that step nor merely repairs it. The exact block
-identity gives a self-contained lower bound and the larger conjectured scale.
+There is a technical issue in the printed proof of its fixed-support inverse bound, Lemma 18 of \citet{chen2026adaptive}. It bounds a Neumann-series remainder in spectral norm and then uses it as an upper bound in infinity-operator norm. For symmetric matrices the general inequality is $\|M\|_{\mathrm{op}}\leq\|M\|_{\infty\to\infty}$, in the opposite direction. Our proof neither assumes that step nor merely repairs it. The exact block identity gives a self-contained lower bound and the larger conjectured scale.
 
-Three limitations delimit the result. First, exact orthogonal independence is
-Gaussian. Extending the sharp logarithmic lower bound to every sub-Gaussian
-ensemble requires a replacement for it. Second, constants are not optimized.
-Third, the lower bound is information theoretic. The known matching upper bound
-has a nearly linear-time implementation under initialization and tolerance
-parameters, but our residual estimator (21) is only a concise simultaneous
-certificate.
+Three limitations delimit the result. First, exact orthogonal independence is Gaussian. Extending the sharp logarithmic lower bound to every sub-Gaussian ensemble requires a replacement for it. Second, constants are not optimized. Third, the lower bound is information theoretic. The known matching upper bound has a nearly linear-time implementation under initialization and tolerance parameters, but our residual estimator (21) is only a concise simultaneous certificate.
 
 \bibliography{references}
 
@@ -582,101 +272,34 @@ certificate.
 \section{Gaussian auxiliary bounds}
 \label{app:gaussian}
 
-We prove Lemma~\ref{lem:gaussian}. Let $Z_1,\ldots,Z_N$ be independent
-standard normal variables and let $Z_{(1)}\geq\cdots\geq Z_{(N)}$ be their
-decreasing absolute order statistics. For universal $a,\delta>0$, Gaussian
-lower-tail bounds give
-\[
- \Prob(|Z_1|\geq a\sqrt{\log(eN/m)})
- \geq(1+\delta)\frac{m}{N}
-\]
-whenever $N\geq2m$. A binomial Chernoff bound therefore yields
-$Z_{(m)}\geq a\sqrt{L}$ except on an event of probability $e^{-cm}$.
-This proves the $\ell_1$ lower bound.
+We prove Lemma~\ref{lem:gaussian}. Let $Z_1,\ldots,Z_N$ be independent standard normal variables and let $Z_{(1)}\geq\cdots\geq Z_{(N)}$ be their decreasing absolute order statistics. For universal $a,\delta>0$, Gaussian lower-tail bounds give \[ \Prob(|Z_1|\geq a\sqrt{\log(eN/m)}) \geq(1+\delta)\frac{m}{N} \] whenever $N\geq2m$. A binomial Chernoff bound therefore yields $Z_{(m)}\geq a\sqrt{L}$ except on an event of probability $e^{-cm}$. This proves the $\ell_1$ lower bound.
 
-For every fixed $T$ of size $m$, $\sum_{j\in T}Z_j^2$ is chi-squared with
-$m$ degrees of freedom. Its exponential tail and
-$\binom Nm\leq(eN/m)^m$ imply
-\[
- \max_{|T|=m}\sum_{j\in T}Z_j^2\leq CmL
-\]
-except with probability $e^{-cmL}$. This proves the $\ell_2$ upper bound. It
-also gives $Z_{(m+1)}\leq C\sqrt L$, proving the unselected maximum bound.
-Rescaling by $1/\sqrt n$ gives (9).
+For every fixed $T$ of size $m$, $\sum_{j\in T}Z_j^2$ is chi-squared with $m$ degrees of freedom. Its exponential tail and $\binom Nm\leq(eN/m)^m$ imply \[ \max_{|T|=m}\sum_{j\in T}Z_j^2\leq CmL \] except with probability $e^{-cmL}$. This proves the $\ell_2$ upper bound. It also gives $Z_{(m+1)}\leq C\sqrt L$, proving the unselected maximum bound. Rescaling by $1/\sqrt n$ gives (9).
 
-Conditional on $u$, choose an orthonormal basis of $u^\perp$. The selected
-residual matrix is $(1/\sqrt n)Q$ for an $(n-1)\times m$ standard Gaussian
-matrix $Q$. The usual Gaussian singular-value inequalities give
+Conditional on $u$, choose an orthonormal basis of $u^\perp$. The selected residual matrix is $(1/\sqrt n)Q$ for an $(n-1)\times m$ standard Gaussian matrix $Q$. The usual Gaussian singular-value inequalities give
 \begin{align*}
  s_{\min}(W)&\geq\sqrt{(n-1)/n}-C\sqrt{m/n},\\
  s_{\max}(W)&\leq\sqrt{(n-1)/n}+C\sqrt{m/n}
 \end{align*}
-with failure probability at most $2e^{-cn}$. Choosing $n\geq C_\epsilon m$
-proves (10).
+with failure probability at most $2e^{-cn}$. Choosing $n\geq C_\epsilon m$ proves (10).
 
 \section{Certificate probability and norm details}
 \label{app:certificate}
 
-We fill in two bounds used in Proposition~\ref{prop:certificate}. On the event
-$\|H-I\|_{\mathrm{op}}\leq\epsilon$, equation (9) and the perturbation argument
-from the proof of Theorem~\ref{thm:inverse} give
-\[
- q=c^\top H^{-1}c\asymp\|c\|_2^2,
- \qquad
- \|H^{-1}c\|_1\geq c\|c\|_1.
-\]
-The lower order-statistic event also gives
-$\|c\|_2^2\geq cmL_k/n$. This proves every term in (15).
+We fill in two bounds used in Proposition~\ref{prop:certificate}. On the event $\|H-I\|_{\mathrm{op}}\leq\epsilon$, equation (9) and the perturbation argument from the proof of Theorem~\ref{thm:inverse} give \[ q=c^\top H^{-1}c\asymp\|c\|_2^2, \qquad \|H^{-1}c\|_1\geq c\|c\|_1. \] The lower order-statistic event also gives $\|c\|_2^2\geq cmL_k/n$. This proves every term in (15).
 
-With $b=\sgn(H^{-1}c)$, equations (8) and (14) give exactly
-\[
- h^\top G_S^{-1}h
- =\frac{1+q}{r^2}+\frac{2\|H^{-1}c\|_1}{r}
-   +b^\top H^{-1}b.
-\]
-The upper order-statistic bound, $H\asymp I$, and $m\asymp k$ prove (16).
+With $b=\sgn(H^{-1}c)$, equations (8) and (14) give exactly \[ h^\top G_S^{-1}h =\frac{1+q}{r^2}+\frac{2\|H^{-1}c\|_1}{r} +b^\top H^{-1}b. \] The upper order-statistic bound, $H\asymp I$, and $m\asymp k$ prove (16).
 
-To justify the conditioning in (17), expose $u$, every scalar $c_j$, and the
-selected residuals. The selected index set and $z$ are then measurable. The
-unselected residuals remain mutually independent with law
-$N(0,(I-uu^\top)/n)$. Thus their inner products with
-$(I-uu^\top)z$ are independent centered Gaussians with variance at most
-$\|z\|_2^2/n$. The union bound used in (18) is valid under this conditioning.
-Combining the events in Lemma~\ref{lem:gaussian}, anchor norm concentration,
-and the conditional union bound gives probability at least $0.8$ after changing
-universal constants.
+To justify the conditioning in (17), expose $u$, every scalar $c_j$, and the selected residuals. The selected index set and $z$ are then measurable. The unselected residuals remain mutually independent with law $N(0,(I-uu^\top)/n)$. Thus their inner products with $(I-uu^\top)z$ are independent centered Gaussians with variance at most $\|z\|_2^2/n$. The union bound used in (18) is valid under this conditioning. Combining the events in Lemma~\ref{lem:gaussian}, anchor norm concentration, and the conditional union bound gives probability at least $0.8$ after changing universal constants.
 
 \section{Infinity-RIP upper certificate}
 \label{app:upper}
 
-Let $G=X^\top X-I$. For a fixed set $S$ of size at most $2k$, row $i\in S$,
-and sign vector $b\in\{-1,1\}^S$, condition on $x_i$. The off-diagonal sum
-\[
- \sum_{j\in S\setminus\{i\}}b_jx_i^\top x_j
-\]
-is centered Gaussian conditional on $x_i$, with variance
-$O(k/n)$ on the event $\|x_i\|_2=O(1)$. Hence its probability of exceeding
-$1/4$ is at most $2e^{-cn/k}$. The number of supports of size at most $2k$ is
-$\exp\{O(k\log(ed/k))\}$ for every $d\geq k$. Including the choices of row and
-sign vector leaves $\exp\{O(k\log(ed/k))\}$ triples. Column-norm concentration
-handles the diagonal. A union bound proves (22) once
-$n\geq Ck^2\log(ed/k)$.
+Let $G=X^\top X-I$. For a fixed set $S$ of size at most $2k$, row $i\in S$, and sign vector $b\in\{-1,1\}^S$, condition on $x_i$. The off-diagonal sum \[ \sum_{j\in S\setminus\{i\}}b_jx_i^\top x_j \] is centered Gaussian conditional on $x_i$, with variance $O(k/n)$ on the event $\|x_i\|_2=O(1)$. Hence its probability of exceeding $1/4$ is at most $2e^{-cn/k}$. The number of supports of size at most $2k$ is $\exp\{O(k\log(ed/k))\}$ for every $d\geq k$. Including the choices of row and sign vector leaves $\exp\{O(k\log(ed/k))\}$ triples. Column-norm concentration handles the diagonal. A union bound proves (22) once $n\geq Ck^2\log(ed/k)$.
 
 \section{The prior fixed-support remainder}
 \label{app:prior}
 
-The full version of \citet{chen2026adaptive} writes a fixed-support Gram matrix
-as $I+E$ and expands
-\[
- (I+E)^{-1}=I-E+R,
- \qquad R=\sum_{t\geq2}(-E)^t.
-\]
-It proves $\|R\|_{\mathrm{op}}\leq1/2$, then subtracts $1/2$ from an
-infinity-operator lower bound for $I-E$. That last implication would require
-$\|R\|_{\infty\to\infty}\leq1/2$. Spectral control does not imply this, since
-for symmetric $R$ one has
-$\|R\|_{\mathrm{op}}\leq\|R\|_{\infty\to\infty}$. The gap is not used anywhere
-in our proofs. Equations (7) and (8) replace the whole expansion with an exact
-identity and permit the support to be selected adaptively.
+The full version of \citet{chen2026adaptive} writes a fixed-support Gram matrix as $I+E$ and expands \[ (I+E)^{-1}=I-E+R, \qquad R=\sum_{t\geq2}(-E)^t. \] It proves $\|R\|_{\mathrm{op}}\leq1/2$, then subtracts $1/2$ from an infinity-operator lower bound for $I-E$. That last implication would require $\|R\|_{\infty\to\infty}\leq1/2$. Spectral control does not imply this, since for symmetric $R$ one has $\|R\|_{\mathrm{op}}\leq\|R\|_{\infty\to\infty}$. The gap is not used anywhere in our proofs. Equations (7) and (8) replace the whole expansion with an exact identity and permit the support to be selected adaptively.
 
 \end{document}
