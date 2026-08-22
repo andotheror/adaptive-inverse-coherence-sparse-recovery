@@ -29,7 +29,7 @@ measurement complexity is $\Theta(k^2\log(ed/k))$ at constant confidence.
 
 ## Keywords
 
-sparse recovery, compressed sensing, random matrix theory, adversarial noise, inverse coherence, sample complexity, minimax lower bounds
+adaptive, inverse, coherence, sparse, recovery, have, independent, entries, after
 
 ## Files
 
