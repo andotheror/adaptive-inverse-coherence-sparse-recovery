@@ -33,5 +33,6 @@ sparse recovery, compressed sensing, random matrix theory, adversarial noise, in
 
 ## Files
 
+- `main_2026-08-13.pdf`, the paper as first published, with its OpenTimestamps proof `main_2026-08-13.pdf.ots`.
 - source: `aistats2027.sty`, `main_2026-08-13.tex`, `references.bib`.
-- also: `main_2026-08-13.bbl`, `main_2026-08-13.pdf`.
+- also: `main_2026-08-13.bbl`.
